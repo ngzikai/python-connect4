@@ -3,53 +3,52 @@ import random
 from copy import deepcopy
 
 class Game:
-    def __init__(self, rows, cols):
-        self.mat = np.zeros((rows, cols))
-        self.row = rows
-        self.col = cols
-        self.turn = 1
-        self.wins = 0
+    mat = None
+    rows = 0
+    cols = 0
+    turn = 0
+    wins = 0
 
 def check_victory(game):
     board = game.mat
 
-    for y in range(game.col):
-        for x in range(game.row - 3):
+    for y in range(game.cols):
+        for x in range(game.rows - 3):
             if board[x][y] == 1 and board[x+1][y] == 1 and board[x+2][y] == 1 and board[x+3][y] == 1:
                 return 1
 
-    for x in range(game.row):
-        for y in range(game.col - 3):
+    for x in range(game.rows):
+        for y in range(game.cols - 3):
             if board[x][y] == 1 and board[x][y+1] == 1 and board[x][y+2] == 1 and board[x][y+3] == 1:
                 return 1
 
-    for x in range(game.row - 3):
-        for y in range(3, game.col):
+    for x in range(game.rows - 3):
+        for y in range(3, game.cols):
             if board[x][y] == 1 and board[x+1][y-1] == 1 and board[x+2][y-2] == 1 and board[x+3][y-3] == 1:
                 return 1
 
-    for x in range(game.row - 3):
-        for y in range(game.col - 3):
+    for x in range(game.rows - 3):
+        for y in range(game.cols - 3):
             if board[x][y] == 1 and board[x+1][y+1] == 1 and board[x+2][y+2] == 1 and board[x+3][y+3] == 1:
                 return 1
 
-    for y in range(game.col):
-        for x in range(game.row - 3):
+    for y in range(game.cols):
+        for x in range(game.rows - 3):
             if board[x][y] == 2 and board[x+1][y] == 2 and board[x+2][y] == 2 and board[x+3][y] == 2:
                 return 2
 
-    for x in range(game.row):
-        for y in range(game.col - 3):
+    for x in range(game.rows):
+        for y in range(game.cols - 3):
             if board[x][y] == 2 and board[x][y+1] == 2 and board[x][y+2] == 2 and board[x][y+3] == 2:
                 return 2
 
-    for x in range(game.row - 3):
-        for y in range(3, game.col):
+    for x in range(game.rows - 3):
+        for y in range(3, game.cols):
             if board[x][y] == 2 and board[x+1][y-1] == 2 and board[x+2][y-2] == 2 and board[x+3][y-3] == 2:
                 return 2
 
-    for x in range(game.row - 3):
-        for y in range(game.col - 3):
+    for x in range(game.rows - 3):
+        for y in range(game.cols - 3):
             if board[x][y] == 2 and board[x+1][y+1] == 2 and board[x+2][y+2] == 2 and board[x+3][y+3] == 2:
                 return 2
 
@@ -60,19 +59,26 @@ def check_victory(game):
 
 def apply_move(game, col, pop):
     if pop == False:
-        for x in range(game.row):
+        for x in range(game.rows):
             if game.mat[x][col] == 0:
                 game.mat[x][col] = game.turn
                 break
     else:
-        for x in range(game.row - 1):
+        for x in range(game.rows - 1):
             game.mat[x][col] = game.mat[x + 1][col]
 
-        game.mat[game.row-1][col] = 0
+        game.mat[game.rows-1][col] = 0
+    
+    if game.turn == 1:
+        game.turn = 2
+    else:
+        game.turn = 1
+
+    return game
 
 def check_move(game, col, pop):
     if pop == False:
-        if game.mat[game.row-1][col] == 0:
+        if game.mat[game.rows-1][col] == 0:
             return True
     else:
         if game.mat[0][col] != 0:
@@ -82,7 +88,7 @@ def check_move(game, col, pop):
 
 def random_move(game):
     while True:
-        col = random.randint(0,game.col-1)
+        col = random.randint(0,game.cols-1)
         pop = random.randint(1,2)
         
         if pop == 1:
@@ -99,7 +105,7 @@ def computer_move(game, level):
         return random_move(game)
     elif level == 2:
 
-        for y in range(game.col):
+        for y in range(game.cols):
             tempGame = deepcopy(game)
             tempGame.turn = 2
 
@@ -110,7 +116,7 @@ def computer_move(game, level):
                     apply_move(game, y, False)
                     return(y, False)
 
-        for y in range(game.col):
+        for y in range(game.cols):
             tempGame = deepcopy(game)
             tempGame.turn = 2
 
@@ -121,7 +127,7 @@ def computer_move(game, level):
                     apply_move(game, y, True)
                     return (y, True)
 
-        for y in range(game.col):
+        for y in range(game.cols):
             tempGame = deepcopy(game)
             tempGame.turn = 1
 
@@ -136,15 +142,15 @@ def computer_move(game, level):
 
 def display_board(game):
     print("\n*********Game Board*********\n")
-    for x in range(game.row):
-        for y in range(game.col):
-            print(int(game.mat[game.row -1 -x][y])),
+    for x in range(game.rows):
+        for y in range(game.cols):
+            print(int(game.mat[game.rows -1 -x][y])),
         print ("\n")
     #print(game.mat)
 
 def is_full(game):
-    for x in range(game.row):
-        for y in range(game.col):
+    for x in range(game.rows):
+        for y in range(game.cols):
             if game.mat[x][y] == 0:
                 return False
     return True
@@ -171,7 +177,11 @@ def menu():
             if not (diff == 1 or diff == 2):
                 print ("Please enter a valid choice!")
 
-    game = Game(r, c)
+    game = Game()
+    game.cols = c
+    game.rows = r
+    game.turn = 1
+    game.mat = np.zeros(r,c)
     display_board(game)
 
     while check_victory(game) == 0:
@@ -183,7 +193,7 @@ def menu():
         while c == -1:
             tmp = input("Enter a column to insert/pop: ")
 
-            if tmp >= 0 and tmp < game.col:
+            if tmp >= 0 and tmp < game.cols:
                 c = tmp
             else:
                 print("Please enter a valid column!")
@@ -224,10 +234,7 @@ def menu():
         if com == 2:
             print ("\n**Player " + str(game.turn) + "'s turn**")
             computer_move(game, diff)
-            if game.turn == 1:
-                game.turn = 2
-            else:
-                game.turn = 1
+
             display_board(game)
 
             if check_victory(game) == 1:
@@ -240,4 +247,4 @@ def menu():
                 print("The game is a draw!")
                 break
 
-menu()
+#menu()

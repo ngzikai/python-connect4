@@ -1,5 +1,5 @@
 import numpy as np
-from connect4 import *
+from conn4 import *
 
 def test():
     
@@ -23,7 +23,12 @@ def test():
         print("test 2: Fail of the check_move function !")
         
     # ***************** third test ***************** #
-    game_board_test3 = [[ 1,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0]]
+    game_board_test3 = [[ 1,0,0,0,0,0,0], 
+                        [0,0,0,0,0,0,0], 
+                        [0,0,0,0,0,0,0], 
+                        [0,0,0,0,0,0,0], 
+                        [0,0,0,0,0,0,0],
+                         [0,0,0,0,0,0,0]]
     game = apply_move(game,0,False)
     if (game_board_test3 == game.mat).all() and game.turn == 2: 
         print("test 3: OK !")
