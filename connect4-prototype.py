@@ -1,14 +1,14 @@
-
 import numpy as np
 import random
 from copy import deepcopy
 
 class Game:
-    mat = None
-    row = 0
-    col = 0
-    turn = 0
-    wins = 0
+    def __init__(self, rows, cols):
+        self.mat = np.zeros((rows, cols))
+        self.row = rows
+        self.col = cols
+        self.turn = 1
+        self.wins = 0
 
 def check_victory(game):
     board = game.mat
@@ -59,94 +59,88 @@ def check_victory(game):
     return 0
 
 def apply_move(game, col, pop):
-    if pop == 1:
+    if pop == False:
         for x in range(game.row):
-            if game.mat[game.row - x-1][col] == 0:
-                game.mat[game.row - x-1][col] = game.turn
+            if game.mat[x][col] == 0:
+                game.mat[x][col] = game.turn
                 break
     else:
         for x in range(game.row - 1):
-            game.mat[game.row - x -1][col] = game.mat[game.row - x - 2][col]
+            game.mat[x][col] = game.mat[x + 1][col]
 
-        game.mat[0][col] = 0
-    
-    return game
+        game.mat[game.row-1][col] = 0
 
 def check_move(game, col, pop):
-    if pop == 1:
+    if pop == False:
         if game.mat[game.row-1][col] == 0:
-            return False
+            return True
     else:
-        if game.mat[0][col] == 0:
+        if game.mat[0][col] != 0:
             return True
 
-    return True
+    return False
 
+def random_move(game):
+    while True:
+        col = random.randint(0,game.col-1)
+        pop = random.randint(1,2)
+        
+        if pop == 1:
+            p = False
+        elif pop ==2:
+            p = True
+        
+        if check_move(game, col, p):
+            apply_move(game, col, p)
+            return (col, p)
+                
 def computer_move(game, level):
     if level == 1:
-        while True:
-            col = random.randint(0,game.col-1)
-            pop = random.randint(1,2)
-
-            if check_move(game, col, pop):
-                apply_move(game, col, pop)
-                break
-
+        return random_move(game)
     elif level == 2:
-        moveApplied = 0
 
-        while moveApplied == 0:
-            for y in range(game.col):
-                tempGame = deepcopy(game)
-                tempGame.turn = 2
+        for y in range(game.col):
+            tempGame = deepcopy(game)
+            tempGame.turn = 2
 
-                if check_move(tempGame, y, 1):
-                    apply_move(tempGame, y, 1)
+            if check_move(tempGame, y, False):
+                apply_move(tempGame, y, False)
 
-                    if check_victory(tempGame) == 2:
-                        apply_move(game, y, 1)
-                        moveApplied = 1
-                        break
+                if check_victory(tempGame) == 2:
+                    apply_move(game, y, False)
+                    return(y, False)
 
+        for y in range(game.col):
+            tempGame = deepcopy(game)
+            tempGame.turn = 2
 
-            for y in range(game.col):
-                tempGame = deepcopy(game)
-                tempGame.turn = 2
+            if check_move(tempGame, y, True):
+                apply_move(tempGame, y, True)
 
-                if check_move(tempGame, y, 2):
-                    apply_move(tempGame, y, 2)
+                if check_victory(tempGame) == 2:
+                    apply_move(game, y, True)
+                    return (y, True)
 
-                    if check_victory(tempGame) == 2:
-                        apply_move(game, y, 2)
-                        moveApplied = 1
-                        break
+        for y in range(game.col):
+            tempGame = deepcopy(game)
+            tempGame.turn = 1
 
-            for y in range(game.col):
-                tempGame = deepcopy(game)
-                tempGame.turn = 1
+            if check_move(tempGame, y, False):
+                apply_move(tempGame, y, False)
 
-                if check_move(tempGame, y, 1):
-                    apply_move(tempGame, y, 1)
+                if check_victory(tempGame) == 1:
+                    apply_move(game, y, False)
+                    return(y, False)
 
-                    if check_victory(tempGame) == 1:
-                        apply_move(game, y, 1)
-                        moveApplied = 1
-                        break
-
-            if moveApplied == 0:
-                #print("Entered loop")
-                while True:
-                    col = random.randint(0,game.col-1)
-                    pop = random.randint(1,2)
-
-                    if check_move(game, col, pop):
-                        apply_move(game, col, pop)
-                        moveApplied = 1
-                        break
+        return random_move(game)
 
 def display_board(game):
     print("\n*********Game Board*********\n")
-    print(game.mat)
+    for x in range(game.row):
+        for y in range(game.col):
+            print(int(game.mat[game.row -1 -x][y])),
+        print ("\n")
+    #print(game.mat)
 
 def is_full(game):
     for x in range(game.row):
@@ -201,9 +195,14 @@ def menu():
 
             if not (p == 1 or p == 2):
                 print ("Please enter a valid choice!")
+            
+            if p == 1:
+                pop = False
+            elif p ==2:
+                pop = True
 
-        if check_move(game, c, p):
-            apply_move(game, c, p)
+        if check_move(game, c, pop):
+            apply_move(game, c, pop)
             if game.turn == 1:
                 game.turn = 2
             else:
@@ -241,4 +240,4 @@ def menu():
                 print("The game is a draw!")
                 break
 
-#menu()
+menu()
