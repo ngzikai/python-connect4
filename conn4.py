@@ -11,7 +11,6 @@ class Game:
 
 def check_victory(game):
     board = game.mat
-    #print("Check victory called!!!")
     #check | victory
     for y in range(game.cols):
         for x in range(game.rows - (game.wins-1)):
@@ -30,28 +29,41 @@ def check_victory(game):
             if board[x][y] != 0:
                 piece = board[x][y]
                 count = 0
-                if board[x][y] == piece and board[x][y+1] == piece and board[x][y+2] == piece and board[x][y+3] == piece:
+                for z in range(game.wins):
+                    if board[x][y+z] == piece:
+                        count += 1
+                if count == game.wins:
                     return piece
     
     #check / victory
-    for x in range(game.rows - 3):
-        for y in range(3, game.cols):
+    for x in range(game.rows - (game.wins-1)):
+        for y in range((game.wins-1), game.cols):
             if board[x][y] != 0:
                 piece = board[x][y]
-                if board[x][y] == piece and board[x+1][y-1] == piece and board[x+2][y-2] == piece and board[x+3][y-3] == piece:
+                count = 0
+                for z in range(game.wins):
+                    if board[x+z][y-z] == piece:
+                        count += 1
+                if count == game.wins:
                     return piece
     #check \ victory
-    for x in range(game.rows - 3):
-        for y in range(game.cols - 3):
+    for x in range(game.rows - (game.wins-1)):
+        for y in range(game.cols - (game.wins-1)):
             if board[x][y] != 0:
                 piece = board[x][y]
-                if board[x][y] == piece and board[x+1][y+1] == piece and board[x+2][y+2] == piece and board[x+3][y+3] == piece:
+                count = 0
+                for z in range(game.wins):
+                    if board[x+z][y+z] == piece:
+                        count += 1
+                if count == game.wins:
                     return piece
 
     if is_full(game):
-        #draw
+        #Board is full therefore draw
         return 3
-
+    
+    #If code managed to reach here, means neither player has won or it is not a draw
+    #Therefore there is no conclusive victory
     return 0
 
 def apply_move(game, col, pop):
