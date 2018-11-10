@@ -11,48 +11,45 @@ class Game:
 
 def check_victory(game):
     board = game.mat
-
+    #print("Check victory called!!!")
+    #check | victory
     for y in range(game.cols):
-        for x in range(game.rows - 3):
-            if board[x][y] == 1 and board[x+1][y] == 1 and board[x+2][y] == 1 and board[x+3][y] == 1:
-                return 1
-
+        for x in range(game.rows - (game.wins-1)):
+            if board[x][y] != 0:
+                piece = board[x][y]
+                count = 0
+                for z in range(game.wins):
+                    if board[x+z][y] == piece:
+                        count += 1
+                if count == game.wins:
+                    return piece
+    
+    #check - victory
     for x in range(game.rows):
-        for y in range(game.cols - 3):
-            if board[x][y] == 1 and board[x][y+1] == 1 and board[x][y+2] == 1 and board[x][y+3] == 1:
-                return 1
-
+        for y in range(game.cols - (game.wins-1)):
+            if board[x][y] != 0:
+                piece = board[x][y]
+                count = 0
+                if board[x][y] == piece and board[x][y+1] == piece and board[x][y+2] == piece and board[x][y+3] == piece:
+                    return piece
+    
+    #check / victory
     for x in range(game.rows - 3):
         for y in range(3, game.cols):
-            if board[x][y] == 1 and board[x+1][y-1] == 1 and board[x+2][y-2] == 1 and board[x+3][y-3] == 1:
-                return 1
-
+            if board[x][y] != 0:
+                piece = board[x][y]
+                if board[x][y] == piece and board[x+1][y-1] == piece and board[x+2][y-2] == piece and board[x+3][y-3] == piece:
+                    return piece
+    #check \ victory
     for x in range(game.rows - 3):
         for y in range(game.cols - 3):
-            if board[x][y] == 1 and board[x+1][y+1] == 1 and board[x+2][y+2] == 1 and board[x+3][y+3] == 1:
-                return 1
-
-    for y in range(game.cols):
-        for x in range(game.rows - 3):
-            if board[x][y] == 2 and board[x+1][y] == 2 and board[x+2][y] == 2 and board[x+3][y] == 2:
-                return 2
-
-    for x in range(game.rows):
-        for y in range(game.cols - 3):
-            if board[x][y] == 2 and board[x][y+1] == 2 and board[x][y+2] == 2 and board[x][y+3] == 2:
-                return 2
-
-    for x in range(game.rows - 3):
-        for y in range(3, game.cols):
-            if board[x][y] == 2 and board[x+1][y-1] == 2 and board[x+2][y-2] == 2 and board[x+3][y-3] == 2:
-                return 2
-
-    for x in range(game.rows - 3):
-        for y in range(game.cols - 3):
-            if board[x][y] == 2 and board[x+1][y+1] == 2 and board[x+2][y+2] == 2 and board[x+3][y+3] == 2:
-                return 2
+            if board[x][y] != 0:
+                piece = board[x][y]
+                if board[x][y] == piece and board[x+1][y+1] == piece and board[x+2][y+2] == piece and board[x+3][y+3] == piece:
+                    return piece
 
     if is_full(game):
+        #draw
         return 3
 
     return 0
@@ -144,7 +141,7 @@ def display_board(game):
     print("\n*********Game Board*********\n")
     for x in range(game.rows):
         for y in range(game.cols):
-            print(int(game.mat[game.rows -1 -x][y])),
+            print(str(int(game.mat[game.rows -1 -x][y])) + "\t"),
         print ("\n")
     #print(game.mat)
 
@@ -156,9 +153,20 @@ def is_full(game):
     return True
 
 def menu():
+    game = Game()
     print ("Welcome to Connect Four!\n\nPlease enter the number of rows and columns for your board")
-    r = input("Rows: ")
-    c = input("Cols: ")
+    rows = input("Rows: ")
+    cols = input("Cols: ")
+
+    wins = -1
+    
+    while wins < 0:
+        wins = input("Please enter the number of pieces to win: ")
+        
+        if wins > min(rows, cols):
+            wins = -1
+            print("Please enter a value that is less than " + str(min(rows, cols)))
+    
 
     com = -1
     while not (com == 1 or com == 2):
@@ -177,16 +185,17 @@ def menu():
             if not (diff == 1 or diff == 2):
                 print ("Please enter a valid choice!")
 
-    game = Game()
-    game.cols = c
-    game.rows = r
+    game.rows = rows
+    game.cols = cols
+    game.wins = wins
     game.turn = 1
-    game.mat = np.zeros(r,c)
+    game.mat = np.zeros((game.rows,game.cols))
     display_board(game)
 
     while check_victory(game) == 0:
         c = -1
         p = -1
+        validHumanMove = False
 
         print ("\n**Player " + str(game.turn) + "'s turn**")
 
@@ -208,15 +217,12 @@ def menu():
             
             if p == 1:
                 pop = False
-            elif p ==2:
+            elif p == 2:
                 pop = True
 
         if check_move(game, c, pop):
+            validHumanMove = True
             apply_move(game, c, pop)
-            if game.turn == 1:
-                game.turn = 2
-            else:
-                game.turn = 1
             display_board(game)
 
             if check_victory(game) == 1:
@@ -231,11 +237,15 @@ def menu():
         else:
             print ("The move is not valid, please enter again")
 
-        if com == 2:
+        if (com == 2 and validHumanMove):
             print ("\n**Player " + str(game.turn) + "'s turn**")
-            computer_move(game, diff)
-
+            moveCol, movePop = computer_move(game, diff)
             display_board(game)
+
+            if movePop:
+                print("Computer has popped column " + str(moveCol) + "!!!")
+            else:
+                print("Computer has inserted on column " + str(moveCol) + "!!!")
 
             if check_victory(game) == 1:
                 print("Player 1 has won!")
@@ -247,4 +257,4 @@ def menu():
                 print("The game is a draw!")
                 break
 
-#menu()
+menu()
