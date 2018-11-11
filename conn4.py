@@ -96,8 +96,8 @@ def check_move(game, col, pop):
         if game.mat[game.rows-1][col] == 0:
             return True
     else:
-        #If the first slot of the column (which is in fact, the bottom slot most in the game) is not 0, the column can be popped
-        if game.mat[0][col] != 0:
+        #If the value in the first slot of the column (which is in fact, the bottom slot most in the game) is the current player, the column can be popped
+        if game.mat[0][col] == game.turn:
             return True
 
     return False

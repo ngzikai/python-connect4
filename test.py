@@ -50,7 +50,7 @@ def test():
                         [1,1,2,2,1,1,2], 
                         [1,1,0,2,1,1,2]])
     moveCol, movePop = computer_move(game,1)
-    if (moveCol, movePop) in [(2,False),(0,True),(1,True),(4,True),(5,True),(3,True),(6,True),(2,True)]:
+    if (moveCol, movePop) in [(2,False),(0,True),(1,True),(4,True),(5,True)]:
         print("test 5: OK !")
     else: 
         print("test 5: Fail of the computer_move function !")

@@ -44,8 +44,13 @@ def test():
      
     # ***************** fifth test ***************** #
     game.turn = 1
-    game.mat = np.array([[1,1,2,2,1,1,2], [1,1,2,2,1,1,2], [2,2,1,1,2,2,1], [2,2,1,1,2,2,1], [1,1,2,2,1,1,2], [1,1,0,2,1,1,2]])
-    if computer_move(game,1) in [(2,False),(0,True),(1,True),(4,True),(5,True)]:
+    game.mat = np.array([[1,1,2,2,1,1,2],
+                        [1,1,2,2,1,1,2],
+                        [2,2,1,1,2,2,1],
+                        [2,2,1,1,2,2,1], 
+                        [1,1,2,2,1,1,2],
+                        [1,1,0,2,1,1,2]])
+    if computer_move(game,1) in [(2,False),(0,True),(1,True),(4,True),(5,True),(2,True),(3,True),(6,True)]:
         print("test 5: OK !")
     else: 
         print("test 5: Fail of the computer_move function !")
